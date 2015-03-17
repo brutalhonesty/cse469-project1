@@ -85,7 +85,7 @@ def main():
         sys.exit(1)
     if not args.filename and not args.hex_value:
         parser.print_help()
-        sys.exit(2)
+        sys.exit(1)
     if args.time:
         module = '-T'
     elif args.date:
