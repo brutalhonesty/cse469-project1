@@ -1,6 +1,8 @@
 import datetime
 import os
 import sys
+import argparse
+
 
 def convert(module, format, input):
 
@@ -25,7 +27,7 @@ def convert(module, format, input):
                 return "\n'%s' is empty or improperly formatted." % (input)
         else:
             return "\n'%s' does not exist or is not a file." % (input)
-        
+
     # Convert from hexadecimal to decimal and assume little endian ordering
     decimal = int(''.join([data[i:(i + 2)] for i in reversed(range(0, len(data), 2))]), 16)
 
@@ -37,61 +39,64 @@ def convert(module, format, input):
         # Hour, minute, second
         H, M, S = int(binary[0:5], 2), int(binary[5:11], 2), int(binary[11:16], 2) * 2
         date = datetime.time(H, M, S)
-        
+
         # Format: HH:MM:SS AM/PM
-        return date.strftime("\nTime: %I:%M:%S %p")
+        return date.strftime("Time: %I:%M:%S %p")
 
     # Convert binary to date
     else:
         # Year, month, date
-        Y, M, D = (int(binary[0:7], 2) + 1980), int(binary[7:11], 2), int(binary[11:17], 2) 
+        Y, M, D = (int(binary[0:7], 2) + 1980), int(binary[7:11], 2), int(binary[11:17], 2)
         date = datetime.date(Y, M, D)
 
         # Format: MMM DD, YYYY
-        return date.strftime("\nDate: %b %d, %Y")
+        return date.strftime("Date: %b %d, %Y")
+
 
 def main():
-
     # Handle command line arguments
-    if len(sys.argv) == 4:
-
-        module  = sys.argv[1] # -T or -D 
-        format  = sys.argv[2] # -f or -h 
-        input   = sys.argv[3] # filename or hex value
-
-    else:
-
-        # Print usage information
-        print("\nmac_conversion -T|-D [-f filename | -h hex value]                        ")
-        
-        # -T
-        print("-T Use time conversion module. Either -f or -h must be given.              ")
-
-        # -D
-        print("-D use date conversion module. Either -f or -h must be given.              ")
-        
-        # -f filename
-        # Example usage: -f CSE469-input.txt
-        print("-f filename                                                                ")
-        print("      This specifies the path to a filename that includes a hex value      ")
-        print("      of time or date. Note that the hex value should follow this          ")
-        print("      notation: 0x1234. For the multiple hex values in either a file       ")
-        print("      or a command line input, we consider only one hex value so the       ")
-        print("      recursive mode for MAC conversion is optional.                       ")
-
-        # -h hex value
-        # Example usage: -h 0xF00
-        print("-h hex value                                                               ")
-        print("      This specifies the hex value for converting to either date or        ")
-        print("      time value. Note that the hex value should follow this notation:     ")
-        print("      0x1234. For the multiple hex values in either a file or a            ")
-        print("      command line input, we consider only one hex value so the            ")
-        print("      recursive mode for MAC conversion is optional.                       ")
-
-        return
-
+    parser = argparse.ArgumentParser(
+        description='Performs MAC conversion based on input/output scheme.')
+    parser.add_argument('-T', '--time', action='store_true',
+                        help='Use time conversion module. \
+                        Either -f or -h must be given.')
+    parser.add_argument('-D', '--date', action='store_true',
+                        help='Use date conversion module. \
+                        Either -f or -h must be given.')
+    parser.add_argument('-f', '--filename',
+                        help='This specifies the path to a filename that \
+                        includes a hex value of time or date. Note that \
+                        the hex value should follow this notation: 0x1234. \
+                        For the multiple hex values in either a file or a \
+                        command line input, we consider only one \
+                        hex value so the recursive mode for a MAC \
+                        conversion is optional.')
+    parser.add_argument('-hex', '--hex-value',
+                        help='This specifies the hex value for converting \
+                        to either date or time value. Note that \
+                        the hex value should follow this notation: 0x1234. \
+                        For the multiple hex values in either a file or a \
+                        command line input, we consider only one \
+                        hex value so the recursive mode for a MAC \
+                        conversion is optional.')
+    args = parser.parse_args()
+    if not args.time and not args.date:
+        parser.print_help()
+        sys.exit(1)
+    if not args.filename and not args.hex_value:
+        parser.print_help()
+        sys.exit(2)
+    if args.time:
+        module = '-T'
+    elif args.date:
+        module = '-D'
+    if args.filename:
+        format = '-f'
+        input = args.filename
+    elif args.hex_value:
+        format = '-h'
+        input = args.hex_value
     print convert(module, format, input)
 
 if __name__ == '__main__':
     main()
-
