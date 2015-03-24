@@ -71,7 +71,7 @@ def main():
                         command line input, we consider only one \
                         hex value so the recursive mode for a MAC \
                         conversion is optional.')
-    parser.add_argument('-hex', '--hex-value',
+    parser.add_argument('-x', '--hex-value',
                         help='This specifies the hex value for converting \
                         to either date or time value. Note that \
                         the hex value should follow this notation: 0x1234. \
