@@ -40,6 +40,7 @@ PARTITION_TYPES = {
 def _write_md5_file(file_name, hash_value):
     '''
     Write the md5 hash value to a file given the file name.
+
     @type file_name: string
     @param file_name: The file name of the file.
     @type hash_value: string
@@ -54,6 +55,16 @@ def _write_md5_file(file_name, hash_value):
 
 
 def _write_sha1_file(file_name, hash_value):
+    '''
+    Write the sha1 hash value to a file given the file name.
+
+    @type file_name: string
+    @param file_name: The file name of the file.
+    @type hash_value: string
+    @param hash_value: The hash in hex to store.
+    @rtype: None
+    @return: None
+    '''
     sha1_file = open('SHA1-' + file_name + '.txt', 'w')
     sha1_file.write(hash_value)
     sha1_file.close()
@@ -61,12 +72,28 @@ def _write_sha1_file(file_name, hash_value):
 
 
 def _parse_mbr(input_file):
+    '''
+    Parse the MBR into the partition table class.
+
+    @type input_file: string
+    @param input_file: The binary file being read.
+    @rtype: PartitionTable
+    @return: The partition table class instantiated.
+    '''
     boot_data = input_file[:440]
     partition_table_data = PartitionTable(input_file[440:])
     return partition_table_data
 
 
 def _display_mbr(partition_table):
+    '''
+    Output the MBR data to the console.
+
+    @type partition_table: PartitionTable
+    @param partition_table: The partition table class instantiated.
+    @rtype: None
+    @return: None
+    '''
     print '(0{0:x}) {1}, {2}, {3}'.format(
         to_value(partition_table.entry_0.partition_type),
         to_type(to_value(partition_table.entry_0.partition_type)),
