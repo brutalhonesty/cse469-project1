@@ -13,8 +13,8 @@ parser = argparse.ArgumentParser(description='Testing VBR reading.')
 parser.add_argument('-i', '--input', help='Path to input image file.')
 args = parser.parse_args()
 if(args.input is None):
-  parser.print_help()
-  sys.exit(0)
+    parser.print_help()
+    sys.exit(0)
 input_file = open(args.input, 'rb').read()
 partition_1 = input_file[446:462]
 partition_type = partition_1[4:5]
@@ -44,4 +44,6 @@ size_of_each_fat_in_sectors = vbr[36:40]
 print 'size_of_each_fat_in_sectors', convert_to_little_endian(binascii.b2a_hex(size_of_each_fat_in_sectors)), 'in hex'
 # TODO Convert above to decimal int('0x000002e5', 16)
 size_of_each_fat_in_sectors_int = int(convert_to_little_endian(binascii.b2a_hex(size_of_each_fat_in_sectors)), 16)
+print 'Fat starting sector', reserved_area_int
+print 'Fat ending sector', reserved_area_int - 1 + (number_of_fats_int * size_of_each_fat_in_sectors_int)
 print 'first_sector_of_cluster_2', 63 + reserved_area_int + (size_of_each_fat_in_sectors_int * number_of_fats_int)
