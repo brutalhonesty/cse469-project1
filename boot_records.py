@@ -117,6 +117,44 @@ def _display_mbr(partition_table):
     print '======================================='
 
 
+def _display_vbr(partition_table, vbr):
+    print 'Partition 0({0}):'.format(
+        to_type(to_value(partition_table.entry_0.partition_type)))
+    print 'Reserved area: Start Sector: {0} Ending Sector: {1} Size: {2} sectors'.format()
+    print 'Sectors per cluster: {0} sectors'.format()
+    print 'FAT Area: Start Sector: {0} Ending Sector: {1}'.format()
+    print '# of FATs: {0}'.format()
+    print 'The size of each FAT: {0} sectors'.format()
+    print 'The first sector of cluster 2: {0} sectors'.format()
+    print '======================================='
+    print 'Partition 1({0}):'.format(
+        to_type(to_value(partition_table.entry_1.partition_type)))
+    print 'Reserved area: Start Sector: {0} Ending Sector: {1} Size: {2} sectors'.format()
+    print 'Sectors per cluster: {0} sectors'.format()
+    print 'FAT Area: Start Sector: {0} Ending Sector: {1}'.format()
+    print '# of FATs: {0}'.format()
+    print 'The size of each FAT: {0} sectors'.format()
+    print 'The first sector of cluster 2: {0} sectors'.format()
+    print '======================================='
+    print 'Partition 2({0}):'.format(
+        to_type(to_value(partition_table.entry_2.partition_type)))
+    print 'Reserved area: Start Sector: {0} Ending Sector: {1} Size: {2} sectors'.format()
+    print 'Sectors per cluster: {0} sectors'.format()
+    print 'FAT Area: Start Sector: {0} Ending Sector: {1}'.format()
+    print '# of FATs: {0}'.format()
+    print 'The size of each FAT: {0} sectors'.format()
+    print 'The first sector of cluster 2: {0} sectors'.format()
+    print '======================================='
+    print 'Partition 3({0}):'.format(
+        to_type(to_value(partition_table.entry_3.partition_type)))
+    print 'Reserved area: Start Sector: {0} Ending Sector: {1} Size: {2} sectors'.format()
+    print 'Sectors per cluster: {0} sectors'.format()
+    print 'FAT Area: Start Sector: {0} Ending Sector: {1}'.format()
+    print '# of FATs: {0}'.format()
+    print 'The size of each FAT: {0} sectors'.format()
+    print 'The first sector of cluster 2: {0} sectors'.format()
+
+
 def to_value(char):
     padded = '\x00\x00\x00' + str(char)
     val = int(struct.unpack('>I', padded)[0])
@@ -142,6 +180,8 @@ def main():
     file_name = ntpath.basename(args.input).split('.')[0]
     md5_hash = hashlib.md5(input_file).hexdigest()
     sha1_hash = hashlib.sha1(input_file).hexdigest()
+    print 'Checksums:'
+    print '======================================='
     print 'MD5: ' + md5_hash + '\n'
     print 'SHA1: ' + sha1_hash
     print '======================================='
