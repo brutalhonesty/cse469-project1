@@ -85,6 +85,10 @@ def _parse_mbr(input_file):
     return partition_table_data
 
 
+def _extract_vbr(partition_table, input_file):
+    return None
+
+
 def _display_mbr(partition_table):
     '''
     Output the MBR data to the console.
@@ -187,9 +191,12 @@ def main():
     print '======================================='
     _write_md5_file(file_name, md5_hash)
     _write_sha1_file(file_name, sha1_hash)
-    input_file = open(args.input, 'rb').read(512)
-    partition_table = _parse_mbr(input_file)
+    input_file = open(args.input, 'rb').read()
+    mbr = input_file[:512]
+    partition_table = _parse_mbr(mbr)
     _display_mbr(partition_table)
+    # vbr = _extract_vbr(partition_table, input_file)
+    # _display_vbr(partition_table, vbr)
 
 if __name__ == '__main__':
     main()
