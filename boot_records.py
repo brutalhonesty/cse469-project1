@@ -101,23 +101,23 @@ def _display_mbr(partition_table):
     print '(0{0:x}) {1}, {2}, {3}'.format(
         to_value(partition_table.entry_0.partition_type),
         to_type(to_value(partition_table.entry_0.partition_type)),
-        partition_table.entry_0.start_lba,
-        partition_table.entry_0.size_in_sectors)
+        str(partition_table.entry_0.start_lba).zfill(10),
+        str(partition_table.entry_0.size_in_sectors).zfill(10))
     print '(0{0:x}) {1}, {2}, {3}'.format(
         to_value(partition_table.entry_1.partition_type),
         to_type(to_value(partition_table.entry_1.partition_type)),
-        partition_table.entry_1.start_lba,
-        partition_table.entry_1.size_in_sectors)
+        str(partition_table.entry_1.start_lba).zfill(10),
+        str(partition_table.entry_1.size_in_sectors).zfill(10))
     print '(0{0:x}) {1}, {2}, {3}'.format(
         to_value(partition_table.entry_2.partition_type),
         to_type(to_value(partition_table.entry_2.partition_type)),
-        partition_table.entry_2.start_lba,
-        partition_table.entry_2.size_in_sectors)
+        str(partition_table.entry_2.start_lba).zfill(10),
+        str(partition_table.entry_2.size_in_sectors).zfill(10))
     print '(0{0:x}) {1}, {2}, {3}'.format(
         to_value(partition_table.entry_3.partition_type),
         to_type(to_value(partition_table.entry_3.partition_type)),
-        partition_table.entry_3.start_lba,
-        partition_table.entry_3.size_in_sectors)
+        str(partition_table.entry_3.start_lba).zfill(10),
+        str(partition_table.entry_3.size_in_sectors).zfill(10))
     print '======================================='
 
 
