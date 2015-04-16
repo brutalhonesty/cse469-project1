@@ -1,9 +1,12 @@
+#!/usr/bin/python
+import binascii
+import argparse
 import hashlib
 import ntpath
 import sys
 import os
 import struct
-import argparse
+
 from partition_table import PartitionTable
 
 PARTITION_TYPES = {
@@ -35,6 +38,10 @@ PARTITION_TYPES = {
     0xC7: 'Typical of a corrupted NTFS volume/stripe set',
     0xEB: 'BeOS'
 }
+
+def convert_to_little_endian(argv):
+    string = str(argv)
+    return ''.join(string[i:i + 2] for i in reversed(xrange(0, len(string), 2)))
 
 
 def _write_md5_file(file_name, hash_value):
@@ -86,7 +93,38 @@ def _parse_mbr(input_file):
 
 
 def _extract_vbr(partition_table, input_file):
-    return None
+	offsets = [0, 16, 32, 48]
+	partition_size = 0
+	for index, offset in enumerate(offsets):
+		partition = input_file[(446 + offset):(462 + offset)]
+		partition_type = partition[4:5]
+		partition_address = partition[8:12]
+		partition_address = int(convert_to_little_endian(binascii.b2a_hex(partition_address)), 16)
+		start_partition = partition_address * 512
+		end_partition = start_partition + 512
+		vbr = input_file[start_partition:end_partition]
+		bytes_per_sector = vbr[13]
+		reserved_area = vbr[14:16]
+		reserved_area_int = int(convert_to_little_endian(binascii.b2a_hex(reserved_area)), 16)
+		sectors_per_cluster = vbr[13]
+		sectors_per_cluster_int = int(convert_to_little_endian(binascii.b2a_hex(sectors_per_cluster)), 16)
+		number_of_fats = vbr[16]
+		number_of_fats_int = int(convert_to_little_endian(binascii.b2a_hex(number_of_fats)), 16)
+		
+		# This below works for FAT 32, use vbr[22:24] for FAT 16
+		size_of_each_fat_in_sectors = vbr[36:40] if (to_value(partition_type) == 11) else vbr[22:24]
+		size_of_each_fat_in_sectors_int = int(convert_to_little_endian(binascii.b2a_hex(size_of_each_fat_in_sectors)), 16)
+		
+		print('=======================================')
+		print("Partition %d(%s)" % (index, to_type(to_value(partition_type))))
+		print("Reserved area: Start sector: %d Ending sector: %d Size: %d sectors" % (0, (reserved_area_int - 1), (reserved_area_int - 1) + 1))
+		print("Sectors per cluster: %d sectors" % (sectors_per_cluster_int))
+		print("FAT area: Starting sector: %d Ending sector: %d" % (reserved_area_int, (reserved_area_int - 1 + (number_of_fats_int * size_of_each_fat_in_sectors_int))))
+		print("# of FATs: %d" % (number_of_fats_int))
+		print("The size of each FAT: %d sectors" % (size_of_each_fat_in_sectors_int))
+		print("The first sector of cluster 2: %d sectors" % (partition_size + reserved_area_int + (size_of_each_fat_in_sectors_int * number_of_fats_int)))
+		partition_size += int(convert_to_little_endian(binascii.b2a_hex(partition[12:16])), 16)
+		
 
 
 def _display_mbr(partition_table):
@@ -118,7 +156,7 @@ def _display_mbr(partition_table):
         to_type(to_value(partition_table.entry_3.partition_type)),
         str(partition_table.entry_3.start_lba).zfill(10),
         str(partition_table.entry_3.size_in_sectors).zfill(10))
-    print '======================================='
+    # print '======================================='
 
 
 def _display_vbr(partition_table, vbr):
@@ -195,7 +233,7 @@ def main():
     mbr = input_file[:512]
     partition_table = _parse_mbr(mbr)
     _display_mbr(partition_table)
-    # vbr = _extract_vbr(partition_table, input_file)
+    vbr = _extract_vbr(partition_table, input_file)
     # _display_vbr(partition_table, vbr)
 
 if __name__ == '__main__':
