@@ -21,7 +21,7 @@ def convert(module, format, input):
             with open(input, 'r') as fin:
                 data = fin.read()
             # Check the data for correct format
-            if len(data) and ("0x" in input):
+            if len(data) and ("0x" in data):
                 data = data[2:]
             else:
                 return "\n'%s' is empty or improperly formatted." % (input)
